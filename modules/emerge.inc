@@ -1,6 +1,12 @@
 #!/bin/sh
 # 'emerge' Module for gentoo-update.sh
 
+emerge_do__init()
+{
+	emerge -V &>/dev/null || die "sys-apps/portage is not installed!"
+	revdep-rebuild --help &>/dev/null || die "app-portage/gentoolkit is not installed!"
+}
+
 emerge_do_world()
 {
 	run emerge -DNuav @world
