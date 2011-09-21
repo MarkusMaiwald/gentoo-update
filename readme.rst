@@ -11,8 +11,6 @@ gentoo-update has following dependencies:
 
 This thing comes with two main scripts, update-gentoo.sh and tmpfs-emerge.sh.
 
-- tmpfs-emerge.sh which just mounts tmpfs using tmpfs.inc module and emerge using mounted tmpfs
-
 ----------------
 update-gentoo.sh
 ----------------
