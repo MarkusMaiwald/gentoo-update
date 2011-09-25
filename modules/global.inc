@@ -19,13 +19,10 @@ load_module()
 # start module
 module_cmd()
 {
-	local optional
-	optional=0
-	# check if this is an optional module
-	if [[ "$1" == "--optional" ]]; then
-		shift
-		optional=1
-	fi
+	# parse parameters
+	local params
+	params=( $(get_long_parameters $*) )
+	shift ${#params[*]}
 
 	if [[ $# -ne 2 ]]; then
 		print "$FUNCNAME error: invalid parameters!"
@@ -34,7 +31,7 @@ module_cmd()
 		if type -t ${1}_do_${2} &>/dev/null; then
 			${1}_do_${2}
 		else
-			if [[ optional -eq 0 ]]; then
+			if ! [[ "${params[*]}" =~ "optional" ]]; then
 				die "Non-optional function '${1}_do_${2}' not found!"
 			fi
 		fi
@@ -45,6 +42,17 @@ module_query_cmd()
 {
 	type -t ${1}_do_${2} &>/dev/null
 	return $?
+}
+
+get_long_parameters()
+{
+	local params
+	params=""
+	while [[ "${1:0:2}" == "--" ]]; do
+		params="${params}${1:2} "
+		shift
+	done
+	echo $params
 }
 
 # print message
@@ -72,20 +80,22 @@ ask() {
 
 # Run a command
 run() {
-	local silent
-	silent=0
-	# check if this is an optional module
-	if [[ "$1" == "--silent" ]]; then
-		shift
-		silent=1
-	fi
+	# parse parameters
+	local params
+	params=( $(get_long_parameters $*) )
+	shift ${#params[*]}
 
 	if [[ $# -eq 0 ]]; then
 		die "Invalid $FUNCNAME parameters!"
 	fi
 
-	[[ $silent -ne 1 ]] && print "Executing '$*'.."
-	$* || die "Command '$*' failed!"
+	[[ "${params[*]}" =~ "silent" ]] || print "Executing '$*'.."
+	if [[ "${params[*]}" =~ "return" ]]; then
+		$*
+		return $?
+	else
+		$* || die "Executing '$*' failed!"
+	fi
 }
 
 die()
