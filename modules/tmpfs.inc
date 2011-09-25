@@ -1,7 +1,7 @@
 #!/bin/sh
 # 'tmpfs' Module for gentoo-update.sh
 
-tmpfs_path="/var/tmp/portage-tmpfs"
+tmpfs_path="/var/tmp/portage"
 tmpfs_size="1G"
 
 tmpfs_do__init()
@@ -18,7 +18,8 @@ tmpfs_mounted()
 
 tmpfs_do_mount()
 {
-	export PORTAGE_TMPDIR="$tmpfs_path"
+	# Doesn't work with per-package tmpdir
+	#export PORTAGE_TMPDIR="$tmpfs_path"
 	if ! tmpfs_mounted; then
 		if 	mount -t tmpfs -o size=$tmpfs_size tmpfs $tmpfs_path; then
 			print "tmpfs with maximum size of $tmpfs_size has been mounted successfully."
