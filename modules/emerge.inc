@@ -1,6 +1,20 @@
 #!/bin/sh
 # 'emerge' Module for gentoo-update.sh
 
+emerge_run()
+{
+	if ! module_query_cmd tmpfs unmount; then
+		run $*
+	else
+		# Special case for tmpfs enabled script
+		if ! run --return $* && \
+			ask "Executing '$*' failed! Do you wan't to unmount tmpfs?"; then
+				module_cmd tmpfs unmount
+				exit 1
+		fi
+	fi
+}
+
 emerge_do__init()
 {
 	emerge -V &>/dev/null || die "sys-apps/portage is not installed!"
@@ -9,7 +23,7 @@ emerge_do__init()
 
 emerge_do_world()
 {
-	run emerge -DNuav @world
+	emerge_run emerge -DNuav @world
 	pause
 }
 
@@ -21,7 +35,7 @@ emerge_do_emptytree()
 	if [[ -z $etoutput ]]; then
 		print "Nothing to update through empty-tree..."
 	else
-		run emerge -1 $etoutput
+		emerge_run emerge -1 $etoutput
 		pause
 	fi
 }
@@ -30,6 +44,6 @@ emerge_do_cleanup()
 {
 	run dispatch-conf
 	run emerge --depclean
-	run revdep-rebuild -i
+	emerge_run revdep-rebuild -i
 	run eclean -d distfiles
 }

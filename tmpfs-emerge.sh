@@ -31,8 +31,10 @@ module_cmd tmpfs mount
 ##
 ## Run emerge
 ##
-run --silent emerge $*
-
+if ! run --silent --return emerge $* && \
+		! ask "Executing 'emerge $*' failed! Do you wan't to unmount tmpfs?"; then
+	exit 1
+fi
 
 ##
 ## Optional: unmount tmpfs
