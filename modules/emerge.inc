@@ -8,7 +8,7 @@ emerge_run()
 	else
 		# Special case for tmpfs enabled script
 		if ! run --return $* && \
-			ask "Executing '$*' failed! Do you wan't to unmount tmpfs?"; then
+			ask "Executing '$*' failed! Do you want to unmount tmpfs?"; then
 				module_cmd tmpfs unmount
 				exit 1
 		fi
