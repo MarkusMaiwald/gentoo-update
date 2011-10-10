@@ -31,7 +31,7 @@ emerge_do_emptytree()
 {
 	print "Parsing empty-tree output..."
 	local etoutput
-	etoutput=$(emerge -ep world | sed -r -e '/^[^\[]/d' -e '/\[ebuild.+R.+\]/d' -e 's/^\[[^]]+\][[:space:]]+([^[:space:]]+).*$/=\1/')
+	etoutput=$(emerge -epN world | sed -r -e '/^[^\[]/d' -e '/\[ebuild.+R.+\]/d' -e 's/^\[[^]]+\][[:space:]]+([^[:space:]]+).*$/=\1/')
 	if [[ -z $etoutput ]]; then
 		print "Nothing to update through empty-tree..."
 	else
