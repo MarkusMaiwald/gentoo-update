@@ -7,7 +7,7 @@
 DO_SYNC=0
 DO_ET=0
 DO_PERLCLEAN=0
-
+DO_PYTHONUPDATER=0
 
 ##
 ## Global functions
@@ -23,7 +23,7 @@ fi
 load_module emerge
 load_module eixsync
 load_module perlclean
-
+load_module pythonupdater
 
 ##
 ## Optional modules
@@ -45,6 +45,9 @@ while [[ $# -gt 0 ]]; do
 		-p|-P|--perlclean)
 			DO_PERLCLEAN=1
 			;;
+		-y|-y|--pythonupdater)
+			DO_PYTHONUPDATER=1
+			;;
 	esac
 	shift
 done
@@ -63,6 +66,14 @@ fi
 if [[ $DO_PERLCLEAN -eq 0 ]]; then
 	module_cmd perlclean updatecheck
 fi
+
+##
+## Check if we're going to update python (if expicit python updater has not been selected)
+##
+if [[ $DO_PYTHONUPDATER -eq 0 ]]; then
+	module_cmd pythonupdater updatecheck
+fi
+
 
 ##
 ## Optional: mount tmpfs if it's not mounted already
@@ -87,6 +98,14 @@ fi
 if [[ $DO_PERLCLEAN -ge 1 || $perlclean_update_queued -ge 1 ]]; then
 	module_cmd perlclean clean
 fi
+
+##
+## Python-updater
+##
+if [[ $DO_PYTHONUPDATER -ge 1 || $pythonupdater_update_queued -ge 1 ]]; then
+	module_cmd pythonupdater run
+fi
+
 
 ##
 ## Cleanup and system check
