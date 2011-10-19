@@ -21,24 +21,30 @@ emerge_do__init()
 	revdep-rebuild --help &>/dev/null || die "app-portage/gentoolkit is not installed!"
 }
 
-emerge_do_world()
+emerge_do_update()
 {
 	emerge_run emerge -DNuav @world
 	pause
 }
 
-emerge_do_emptytree()
+emerge_do_upgrade()
 {
-	print "Parsing empty-tree output..."
-	local etoutput
-	etoutput=$(emerge -epN world | sed -r -e '/^[^\[]/d' -e '/\[ebuild.+R.+\]/d' -e 's/^\[[^]]+\][[:space:]]+([^[:space:]]+).*$/=\1/')
-	if [[ -z $etoutput ]]; then
-		print "Nothing to update through empty-tree..."
-	else
-		emerge_run emerge -1 $etoutput
-		pause
-	fi
+	emerge_run emerge -DNuav --rebuild-if-new-rev=y --with-bdeps=y @world
+	pause
 }
+
+#emerge_do_emptytree()
+#{
+#	print "Parsing empty-tree output..."
+#	local etoutput
+#	etoutput=$(emerge -epN world | sed -r -e '/^[^\[]/d' -e '/\[ebuild.+R.+\]/d' -e 's/^\[[^]]+\][[:space:]]+([^[:space:]]+).*$/=\1/')
+#	if [[ -z $etoutput ]]; then
+#		print "Nothing to update through empty-tree..."
+#	else
+#		emerge_run emerge -1 $etoutput
+#		pause
+#	fi
+#}
 
 emerge_do_cleanup()
 {

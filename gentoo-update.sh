@@ -5,7 +5,7 @@
 ## parameter memory
 ##
 DO_SYNC=0
-DO_ET=0
+DO_UPGRADE=0
 DO_PERLCLEAN=0
 DO_PYTHONUPDATER=0
 
@@ -36,8 +36,8 @@ load_module tmpfs
 ##
 while [[ $# -gt 0 ]]; do
 	case "$1" in
-		-e|-E|--emptytree)
-			DO_ET=1
+		-u|-U|--upgrade)
+			DO_UPGRADE=1
 			;;
 		-s|-S|--sync)
 			DO_SYNC=1
@@ -81,15 +81,12 @@ fi
 module_cmd --optional tmpfs mount
 
 ##
-## Update @world
+## Update or Upgrade @world
 ##
-module_cmd emerge world
-
-##
-## If to do an empty tree parse
-##
-if [[ $DO_ET -ge 1 ]]; then
-	module_cmd emerge emptytree
+if [[ $DO_UPGRADE -ge 1 ]]; then
+	module_cmd emerge upgrade
+else
+	module_cmd emerge update
 fi
 
 ##
