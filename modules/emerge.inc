@@ -3,13 +3,13 @@
 
 emerge_run()
 {
-	if ! module_query_cmd tmpfs unmount; then
-		run $*
-	else
-		# Special case for tmpfs enabled script
-		if ! run --return $*; then
-			if ask "Executing '$*' failed! Do you want to unmount tmpfs?"; then
+	if ! run --return $*; then
+		if ask "Emerging aborted. Do you want to quit?"; then
+			if module_query_cmd tmpfs unmount; then
+				# Special case for tmpfs enabled script
+				if ask "Do you want to unmount tmpfs?"; then
 				module_cmd tmpfs unmount
+				fi
 			fi
 			exit 1
 		fi
@@ -30,7 +30,7 @@ emerge_do_update()
 
 emerge_do_upgrade()
 {
-	emerge_run emerge -DNuav --rebuild-if-new-rev=y --with-bdeps=y @world
+	emerge_run emerge -DNuav --rebuild-if-new-ver=y --with-bdeps=y @world #--rebuild-if-new-rev is way to noisy
 	pause
 }
 
@@ -50,7 +50,7 @@ emerge_do_upgrade()
 emerge_do_cleanup()
 {
 	run dispatch-conf
-	run emerge --depclean
-	emerge_run revdep-rebuild -i
+	run emerge --depclean --ask
+	emerge_run revdep-rebuild -i -- --ask
 	run eclean -d distfiles
 }
